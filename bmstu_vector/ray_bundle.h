@@ -54,6 +54,9 @@ public:
     ~array_bundle() {
         delete[]raw_ptr_;
     }
+    void swap(array_bundle &other) noexcept{
+        std::swap(raw_ptr_, other.raw_ptr_);
+    }
 
 private:
     T *raw_ptr_;

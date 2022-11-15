@@ -42,7 +42,7 @@ public:
     //Release
     T *Release() noexcept {
         T *ptr = raw_ptr_;
-        raw_ptr = nullptr;
+        raw_ptr_ = nullptr;
         return
                 ptr;
     }

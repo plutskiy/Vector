@@ -16,6 +16,7 @@ namespace bmstu {
     public:
         using Iterator = Type *;
         using ConstIterator = const Type *;
+        vector() noexcept = default;
 
         vector(size_t size, const Type &value = Type{}) :
                 size_(size), capacity_(size), data_(size) {
@@ -26,17 +27,25 @@ namespace bmstu {
             }
         }
         //Конструктор копироания
-//        vector(const Vector<Type> &other) : size_(other.size()), capacity_(other.capacity()){
+//        vector(const vector<Type> &other) : size_(other.size()), capacity_(other.capacity()), data_(size_){
 //            std::copy(other.begin(), other.end(), begin());
+            //============================
+            //*соня auto result = begin();
+            //auto last = other.cend();
+            //auto first = other.begin();
+            //for (; first != last; ++first, (void) ++result){
+            //    *result = *first;
+            //}
+            //============================
+        }
 
-        }//Конструктор перемещения
-        vector(const Vector<Type> &&other) {
-            this->swap other;
+        //Конструктор перемещения
+        vector(vector<Type> &&other) {
+            this->swap(other);
         }
         vector(std::initializer_list<Type> ilist) : size_(ilist.size()), capacity_(ilist.size()), data(ilist.size()){
-            std::copy(other.begin)
+            std::copy(ilist.begin(), ilist.end(), begin());
         }
-        vector() noexcept = default;
 
         ///Iterators
         Iterator begin() noexcept {
@@ -44,21 +53,29 @@ namespace bmstu {
         }
 
         Iterator end() noexcept {
-            return data_.Get() + size;
+            return data_.Get() + size_;
+        }
+        
+        ConstIterator begin() const noexcept {
+            return data_.Get();
         }
 
-        ConstIterator begin() noexcept {
-            return data_.Get() + size;
+        ConstIterator end() const noexcept {
+            return data_.Get() + size_;
         }
 
-        ConstIterator end() noexcept {
-            return data_.Get() + size;
+        ConstIterator cbegin() const noexcept {
+            return data_.Get();
+        }
+
+        ConstIterator cend() const noexcept {
+            return data_.Get() + size_;
         }
 
         Type & operator[](size_t index) noexcept{
             return data_[index];
         }
-        const Type & operator[](size_t index) noexcept{
+        const Type & operator[](size_t index) const noexcept{
             return data_[index];
         }
         //getters
@@ -68,60 +85,72 @@ namespace bmstu {
         size_t capacity() const noexcept{
             return capacity_;
         }
+        
+        bool empty() const noexcept{
+            return (size_ == 0);
+        }
+    
         void Clear() noexcept{
             size_ = 0;
         }
         void swap (vector &other) noexcept{
             std::swap(size_, other.size_);
             std::swap(capacity_, other.capacity_);
-            data.swap(other.data_);
+            data_.swap(other.data_);
         }
-        friend void swap(vector<Type> & lhs, vector<Type> & rhs){
+        friend void swap(vector<Type> &lhs, vector<Type> &rhs){
             lhs.swap(rhs);
         }
         //Оперотор копирующего присваивания
-        vector& operator=(const vector<Type> & other) {
+        vector &operator=(const vector<Type> &other) {
             /// самоприсваивание
             if (this != &other) {
                 if (other.empty()) {
                     Clear();
                 } else {
-                    auto copu(other);
+                    auto copy(other);
                     this->swap(copy);
                 }
             }
+            return *this;
         }
 
         //Оперотор перемещающего присваивания
-        vector& operator=(const vector<Type> & other) {
+        vector& operator=(const vector<Type> &&other) {
             /// самоприсваивание
             if (this != &other) {
                 if (other.empty()) {
                     Clear();
                 } else {
-                    auto copu(std::move(other);
+                    auto copy(std::move(other));
                     this->swap(copy);
                 }
             }
+            return *this;
         }
-        void Reserve(size_t new_size){
+        void Resize(size_t new_size){
             if (new_size > capacity_){
                 size_t new_capacity = std::max(new_size, capacity_ * 2);
                 Reserve(new_size);
+                ///*соня Reserve(new_capacity);
             } else {
                 std::fill(end(), begin() + new_size, Type{});
-                size_ = new_size
+                size_ = new_size;
             }
-            void Reserve {size_t new_capacity){
-                if (new_capacity > capacity_){
-                    array_bundle<Type> tmp(new_capacity);
-                    auto first = begin();
-                    auto last = end();
-                    auto tmp_ptr = tmp.Get();
-                    for(); first != last; ++first, ++tmp_ptr){
-
-                    }
+        }
+        void Reserve (size_t new_capacity){
+            if (new_capacity > capacity_){
+                array_bundle<Type> tmp(new_capacity);
+                auto first = begin();
+                auto last = end();
+                auto tmp_ptr = tmp.Get();
+                for(; first != last; ++first, ++tmp_ptr){
+                    *tmp_ptr = std::move(*first);
+                }
+                data_.swap(tmp);
+                capacity_ = new_capacity;
             }
+        }
         Iterator Insert (ConstIterator pos, Type &&value) {
             size_t n = pos - cbegin();
             if (capacity_ = 0) {
@@ -138,15 +167,21 @@ namespace bmstu {
             for(; first != last; ++first, ++temp_ptr){
                     *temp_ptr = std::move(*first);
             }
-//            temp_ptr[n] = std::move(value);
+            temp_ptr[n] = std::move(value);
 
-            temo_ptr = temp.Get() + n;
-            first = begin() + n + 1;
-            last = begin() + n;
+            first = begin() + n;
+            last = begin() + size_;
+            temp_ptr = temp.Get() + n;
             for(; first != last; ++first, ++temp_ptr){
                     *temp_ptr = std::move(*first);
             }
+            data_.swap(temp);
+            size_++;
+            return begin() + n;
         }
+    Iterator Insert (ConstIterator pos, const Type &value) {
+        Type copy = value;
+        return Insert(pos, std::move(copy));
     private:
         size_t size_ = 0;
         size_t capacity = 0;

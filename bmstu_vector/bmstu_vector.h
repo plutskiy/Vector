@@ -2,7 +2,9 @@
 // Created by Plutskiy on 08.11.2022.
 //
 
+#include <algorithm>
 #include "ray_bundle.h"
+#include <iterator>
 
 #ifndef LET_5_BMSTU_VECTOR_H
 #define LET_5_BMSTU_VECTOR_H
@@ -17,6 +19,69 @@ namespace bmstu {
         using Iterator = Type *;
         using ConstIterator = const Type *;
 
+        struct iterator{
+            using iterator_categoty = std::random_access_iterator_tag;
+            using iter_difference_type = std::ptrdiff_t;
+            using value_type = Type;
+            using pinter = Type *;
+            using reference = Type &;
+
+            iterator (poinet ptr) : m_ptr(ptr){}
+
+            operator *() const {
+                return *m_ptr;
+            }
+
+            pointer operator->(){
+                return m_ptr_*;
+            }
+
+            //Prefix
+            iterator &operator++(){
+                ++m_ptr;
+                return *this;
+            }
+            iterator &operator--(){
+                --m_ptr;
+                return *this;
+            }
+
+            //postfix
+            iterator operator++(int){
+                iterator tmp = *this;
+                ++(*this);
+                return tmp;
+            }
+
+
+            //postfix
+            iterator operator--(int){
+                iterator tmp = *this;
+                --(*this);
+                return tmp;
+            }
+
+
+            iterator& operator=(const iterato &other){
+                interator this->m_ptr = other.m_ptr;
+                return *this;
+
+            }
+
+            friend bool iterator operator==(const iterator &a, const iterator b){
+                return a.m_ptr == b.m_ptr;
+            }
+            friend bool iterator operator==(const iterator &a, const iterator b){
+                return !(a==b);
+            }
+//nedopisal
+            friend bool ptrdiff_t iterator operator=-(const iterator &a, const iterator b){return !(a==b);
+            }
+            interator &operator+(size_t n) noexept{
+
+            }
+        };
+
         vector(size_t size, const Type &value = Type{}) :
                 size_(size), capacity_(size), data_(size) {
             auto first = begin();
@@ -25,17 +90,17 @@ namespace bmstu {
                 *first = value;
             }
         }
+
         //Конструктор копироания
 //        vector(const Vector<Type> &other) : size_(other.size()), capacity_(other.capacity()){
 //            std::copy(other.begin(), other.end(), begin());
-
-        }//Конструктор перемещения
-        vector(const Vector<Type> &&other) {
-            this->swap other;
+//    }
+        //Конструктор перемещения
+        vector(const bmstu::vector<Type> &&other) {
+            this->swap(other);
         }
         vector(std::initializer_list<Type> ilist) : size_(ilist.size()), capacity_(ilist.size()), data(ilist.size()){
-            std::copy(other.begin)
-        }
+            std::copy(ilist.begin(), ilist.end(), begin());        }
         vector() noexcept = default;
 
         ///Iterators
@@ -44,15 +109,15 @@ namespace bmstu {
         }
 
         Iterator end() noexcept {
-            return data_.Get() + size;
+            return data_.Get() + size_;
         }
 
         ConstIterator begin() noexcept {
-            return data_.Get() + size;
+            return data_.Get() + size_;
         }
 
         ConstIterator end() noexcept {
-            return data_.Get() + size;
+            return data_.Get() + size_;
         }
 
         Type & operator[](size_t index) noexcept{
@@ -149,7 +214,7 @@ namespace bmstu {
         }
     private:
         size_t size_ = 0;
-        size_t capacity = 0;
+        size_t capacity_ = 0;
         array_bundle<Type> data_;
 
     };

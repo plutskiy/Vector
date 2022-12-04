@@ -43,18 +43,19 @@ public:
     T *Release() noexcept {
         T *ptr = raw_ptr_;
         raw_ptr_ = nullptr;
-        return
-                ptr;
+        return ptr;
     }
+
     //GETTER
-    T *Get() noexcept{
+    T *Get() noexcept {
         return raw_ptr_;
     }
 
     ~array_bundle() {
         delete[]raw_ptr_;
     }
-    void swap(array_bundle &other) noexcept{
+
+    void swap(array_bundle &other) noexcept {
         std::swap(raw_ptr_, other.raw_ptr_);
     }
 

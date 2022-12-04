@@ -52,7 +52,7 @@ public:
     }
 
     ~array_bundle() {
-        delete[]raw_ptr_;
+        delete[] raw_ptr_;
     }
 
     void swap(array_bundle &other) noexcept {
